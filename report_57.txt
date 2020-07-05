@@ -1,0 +1,227 @@
+***Scope
+
+Scope : JavaScript object that connects controllers and views. Scope contains information that is model data. In the controller, model data can be accessed via "$scope" object.
+Exp:
+<script>
+      var myApp = angular.module("myApp", []);
+      myApp.controller("employeeController", function($scope) {
+         $scope.message = "";
+         $scope.type = "employee";
+      });
+</script>
+
+$scope is passed as the controller's first parameter in its constructor.
+$scope.message and $scope.type : the models are used in the HTML page.
+
+Demo code:
+<h2>My App</h2>
+<div ng-app="myApp" ng-controller="employeeController">
+    <p>{{message}} <br/> {{type}} </p>
+    <div ng-controller="employeeITController">
+        <p>{{message}} <br/> {{type}} </p>
+    </div>
+    <div ng-controller="employeeBHController">
+        <p>{{message}} <br/> {{type}} </p>
+    </div>
+</div>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<script>
+    var myApp = angular.module("myApp", []);
+
+    myApp.controller("employeeController", function($scope) {
+        $scope.message = "Description employeeController";
+        $scope.type = "Employee";
+    });
+
+    myApp.controller("employeeITController", function($scope) {
+        $scope.message = "Description employeeITController";
+        $scope.type = "Employee IT";
+    });
+
+    myApp.controller("employeeBHController", function($scope) {
+        $scope.message = "Description employeeBHController";
+        $scope.type = "Employee BH";
+    });
+
+</script>
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+*****Service
+
+- Services are JavaScript functions and are tasked on certain tasks. It makes them separate entities that are easy to maintain and test. Controllers and filters can simply call them. Services are often injected using "Dependency injection" mechanism of AngularJS.
+
+- AngularJS provides a lot of predefined services: $http, $scope, $route, $window, $location ... 
+- Each service has certain tasks. 
+	For example, $http is used to make ajax requests to the server to retrieve data. $route is used to define routing information .... 
+- The default AngularJS services start with the "$" symbol.
+
+- There are 2 ways to create a service: factory, service.
+*Factory:
+		var app = angular.module("myApp", []);
+		  myApp.factory('mathService', function() {     
+			 var factory = {};  
+			 factory.multiplication = function(a, b) {
+				return a * b 
+			 }
+			 return factory;
+		}); 
+*Service:
+		myApp.service('powerService', function(mathService){
+			this.power = function(a) { 
+				return mathService.multiplication(a,a); 
+			}
+		});
+
+Demo code:
+<h2>My App</h2>
+<div ng-app="myApp" ng-controller="powerController">
+    <p>Type a number: <input type="number" ng-model="number" />
+        <button ng-click="power()">X<sup>2</sup></button>
+    <p>Result: {{result}}</p>
+</div>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<script>
+    var myApp = angular.module("myApp", []);
+    myApp.factory('mathService', function() {
+        var factory = {};
+        factory.multiplication = function(a, b) {
+            return a * b
+        }
+        return factory;
+    });
+
+    myApp.service('powerService', function(mathService){
+        this.power = function(a) {
+            return mathService.multiplication(a,a);
+        }
+    });
+
+    myApp.controller('powerController', function($scope, powerService) {
+        $scope.power = function() {
+            $scope.result = powerService.power($scope.number);
+        }
+    });
+</script>
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+****Dependency Injection trong AngularJS
+
+AngularJS provides Dependency Injection technology, which allows AngularJS core components to be injected to other dependent components
+
+- value: Set value to controller.
+
+	Exp: 
+	var myapp = angular.module("myapp", []);
+	myapp.value("default_value", 5);
+	...
+	myapp.controller('powerController', function($scope, powerService, default_value) {
+		  $scope.number = default_value;
+		  ..........
+	   }
+	});
+
+- factory: A function to use that returns a value. We often use factory functions to calculate and return values.
+
+	Exp: 
+	var myapp = angular.module("myapp", []);
+	myapp.factory('mathService', function() {     
+	   var factory = {};  
+	   factory.<function_name> = function(param_1, param_2) {
+		  return ... 
+	   }
+	   return factory;
+	}); 
+	
+	...
+
+- service: A javascript object containing a set of functions for specific purposes. The service is defined using the service () function and then injects it to the controller.
+
+	Exp: 
+	var myApp = angular.module("myApp", []);
+	myApp.service('powerService', function(mathService){
+		  this.power = function(a) { 
+		  return mathService.<function_name>(param_1, param_2); 
+	   }
+	});
+
+	................
+	
+- provider: The Provider recipe is syntactically defined as a custom type that implements a $get method. This method is a factory function just like the one we use in the Factory recipe. In fact, if you define a Factory recipe, an empty Provider type with the $get method set to your factory function is automatically created under the hood.
+
+	Exp: 
+	var myApp = angular.module("myApp", []);
+	...
+
+	myApp.config(function($provide) {
+	   $provide.provider('mathService', function() {
+		  this.$get = function() {
+			 var factory = {};  
+			 factory.<function_name> = function(param_1, param_2) {
+				return ... 
+	   }
+		  return factory;
+		  };
+	   });
+	});
+	
+
+- constant: Constants can be used to pass internal values at the configuration stage.
+
+	Exp:
+	myApp.constant('<const_name>', '<value_name>');
+	myApp.config(['<provider_name>', '<const_name>', function(<provider_name>, <const_name>) {
+
+	  .........................
+
+	}]);
+
+Demo code:
+	<h2>My App</h2>
+<div ng-app="myApp" ng-controller="powerController">
+    <p>Type a number: <input type="number" ng-model="number" />
+        <button ng-click="power()">X<sup>2</sup></button>
+    <p>Result: {{result}}</p>
+</div>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<script>
+    var myApp = angular.module("myApp", []);
+
+    myApp.config(function($provide) {
+        $provide.provider('mathService', function() {
+            this.$get = function() {
+                var factory = {};
+                factory.multiplication = function(a, b) {
+                    return a * b;
+                }
+                return factory;
+            };
+        });
+    });
+
+    myApp.value("default_value", 5);
+
+    myApp.factory('mathService', function() {
+        var factory = {};
+        factory.multiplication = function(a, b) {
+            return a * b;
+        }
+        return factory;
+    });
+
+    myApp.service('powerService', function(mathService){
+        this.power = function(a) {
+            return mathService.multiplication(a,a);
+        }
+    });
+
+    myApp.controller('powerController', function($scope, powerService, default_value) {
+        $scope.number = default_value;
+        $scope.result = powerService.power($scope.number);
+
+        $scope.power = function() {
+            $scope.result = powerService.power($scope.number);
+        }
+    });
+</script>
